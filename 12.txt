@@ -1,1 +1,19 @@
+ssh -i "week-122.pem" ubuntu@ec2-3-236-83-215.compute-1.amazonaws.com
 
+ubuntu@ip-172-31-69-176:~$ docker --version
+ git --version
+sudo su
+
+root@ip-172-31-69-176:/home/ubuntu# sudo apt-get update
+sudo apt-get install docker.io
+git clone https://github.com/Gayathri2608-hub/maven-practice.git
+ls
+
+cd maven-practice
+ls
+root@ip-172-31-69-176:/home/ubuntu/maven-practice# sudo docker build -t dep1 .
+sudo docker images
+sudo docker run -d -p 8081:8080 dep1
+docker ps
+
+http://13.229.45.122:8081/
