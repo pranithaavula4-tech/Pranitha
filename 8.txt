@@ -1,0 +1,33 @@
+pipeline clone script:
+pipeline {
+    agent any
+
+    tools {
+        maven 'MAVEN_HOME'
+    }
+
+    stages {
+
+        stage('Clone Repo') {
+            steps {
+                powershell 'Remove-Item -Recurse -Force eclipse-maven-projects -ErrorAction SilentlyContinue'
+                bat 'git clone https://github.com/SarvikaSomishetty/eclipse-maven-projects.git'
+            }
+        }
+
+        stage('List Files') {
+            steps {
+                bat 'dir /s'
+            }
+        }
+
+        stage('Build Maven Project') {
+            steps {
+                dir('eclipse-maven-projects') {
+                    // TRY building from this level
+                    bat 'mvn clean install'
+                }
+            }
+        }
+    }
+}
