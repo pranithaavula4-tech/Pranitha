@@ -1,0 +1,17 @@
+1.
+SRS diagrams: starUML diagram:
+=> abstract
+=>requirement dependency
+=>non requirement dependency
+=>user information
+=>workflow og user
+=>use case
+In UML diagrams include:
+=>use case diagram
+=>class diagram
+=>activity diagrams
+=>sequence diagrams
+
+
+
+
