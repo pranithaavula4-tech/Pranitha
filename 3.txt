@@ -1,0 +1,18 @@
+3.
+Collaborative coding using git 
+
+`https://github.com/YOUR-USERNAME/beginner-html-site`
+git clone https://github.com/YOUR-USERNAME/beginner-html-site.git
+cd beginner-html-site
+git checkout -b feature/feat-1
+Open `README.md` or `index.html`
+Add:
+<!-- Edited by Pranitha -->
+git add .
+git commit -m "Added my signature to index.html"
+git push -u origin feature/feat-1
+
+Create a pull request at:
+https://github.com/YOUR-USERNAME/beginner-html-site/pull/new/feature/feat-1
+
+Click the link Git gives you → Submit PR.
