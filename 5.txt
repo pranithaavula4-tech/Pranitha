@@ -1,0 +1,14 @@
+5. 
+Docker CLI commands
+docker --version
+docker pull ubuntu:latest
+docker run -it -p 9090:80 --name myubuntu ubuntu:latest bash
+or
+docker rm myubuntu
+docker run -d --name myubuntu -p 9090:80 ubuntu:latest sleep infinity
+docker exec -it myubuntu bash
+apt update
+apt install -y nginx nano
+cd /usr/share/nginx/html
+nano index.html
+service nginx start
