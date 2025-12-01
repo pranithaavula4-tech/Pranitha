@@ -1,0 +1,352 @@
+
+2.
+Exploring git local and remote commands on the multi-folder project:
+
+cd ~/Documents
+
+✔ STEP 2 — Clone the repo
+
+Example (replace with your repo URL):
+
+git clone https://github.com/YOUR-USERNAME/your-repo.git
+
+
+Example with your repo:
+
+git clone https://github.com/pranithaavula4-tech/node_crash_course.git
+
+
+Or if you're practicing with Brad’s repo:
+
+git clone https://github.com/bradtraversy/node_crash_course.git
+
+✔ STEP 3 — Enter the project folder
+cd node_crash_course
+
+
+
+```bash
+# confirm current branch & status
+git branch
+git status
+
+# see configured remote(s)
+git remote -v
+
+# list recent commits (short)
+git log --oneline -n 10
+```
+
+If your remote needs to be your own repo (not someone else’s), set it:
+
+```bash
+git remote set-url origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
+```
+
+If GitHub asks for credentials on push, use your **username** and a **Personal Access Token (PAT)** as password.
+
+---
+
+## 1) `rejected - non-fast-forward` (someone changed remote first)
+
+**Goal:** Bring remote changes into your work, then push.
+
+Steps:
+
+```bash
+# make sure you committed your local work first
+git add .
+git commit -m "WIP: save before rebasing"   # only if you have changes to commit
+
+# fetch + rebase your local commits on top of remote
+git pull --rebase origin main
+
+# If conflicts appear: resolve files, then
+git add <resolved-file>   # after resolving conflicts
+git rebase --continue     # continue the rebase until finished
+
+# finally push
+git push origin main
+```
+
+If you prefer not to rebase, you can `git pull --no-rebase` (merge), but rebase keeps history linear.
+
+---
+
+## 2) Push a feature branch **without** touching `main`
+
+**Goal:** Create and push a separate branch.
+
+Steps:
+
+```bash
+# create & switch to branch
+git checkout -b feature/homepage-ui
+
+# make changes, then
+git add .
+git commit -m "Add homepage UI"
+
+# push this branch (creates remote branch)
+git push -u origin feature/homepage-ui
+```
+
+`-u` sets upstream so future `git push` works without specifying origin/branch.
+
+---
+
+## 3) Remote added new branches — fetch them locally
+
+**Goal:** Get latest remote refs and checkout new branch.
+
+Steps:
+
+```bash
+# update remote info
+git fetch origin
+
+# list remote branches
+git branch -r
+
+# create a local branch tracking the remote branch (example: remote branch 'frontend')
+git checkout -b frontend origin/frontend
+
+# OR simply
+git checkout frontend   # works if your Git version auto-creates tracking branch
+```
+
+`git fetch` updates your local view of remote branches but doesn’t change your current branch.
+
+---
+
+## 4) Bring teammate changes while avoiding conflicts (stash + rebase)
+
+**Goal:** Temporarily store your uncommitted work, update, then reapply.
+
+Steps:
+
+```bash
+# stash local uncommitted changes
+git stash
+
+# bring remote changes and rebase them onto your branch
+git pull --rebase origin main
+
+# reapply your stashed changes
+git stash pop
+
+# if conflicts after stash pop: resolve files, git add, git commit
+```
+
+If you had committed changes already, you do not need stash — just rebase.
+
+---
+
+## 5) Remove a sensitive file you accidentally pushed (lab-level)
+
+**Goal:** Stop tracking the file going forward (lab-level; history not rewritten).
+
+Steps (simple/lab):
+
+```bash
+# remove from Git index but keep locally
+git rm --cached path/to/secret.txt
+
+# add .gitignore entry to prevent re-adding
+echo "path/to/secret.txt" >> .gitignore
+git add .gitignore
+
+git commit -m "Remove sensitive file from repo and add to .gitignore"
+git push origin main
+```
+
+**Note:** This does not remove the file from git history. For full removal from history use BFG or `git filter-branch` and then **rotate** the leaked secret.
+
+---
+
+## 6) Integrate latest `main` into your feature branch (rebase recommended)
+
+**Goal:** Make your feature branch up-to-date with `main`.
+
+Steps:
+
+```bash
+# switch to your feature branch
+git checkout feature/homepage-ui
+
+# fetch remote updates
+git fetch origin
+
+# rebase your feature branch onto the latest main
+git rebase origin/main
+
+# resolve conflicts if any (git add ... && git rebase --continue)
+# then push (force push required if branch already on remote)
+git push --force-with-lease origin feature/homepage-ui
+```
+
+Use `--force-with-lease` instead of `--force` — safer because it checks remote hasn’t moved unexpectedly.
+
+---
+
+## 7) Push changes to a *different* remote repository
+
+**Goal:** Replace remote URL or add a new remote.
+
+Steps (replace origin):
+
+```bash
+# option A: replace origin with new repo
+git remote set-url origin https://github.com/YOUR-USERNAME/new-repo.git
+git push -u origin main
+
+# OR option B: add a second remote (keeps original)
+git remote add myfork https://github.com/YOUR-USERNAME/new-repo.git
+git push -u myfork main
+```
+
+---
+
+## 8) Local branch behind remote, but you have uncommitted changes
+
+**Goal:** Save uncommitted work, update, restore work.
+
+Steps:
+
+```bash
+git stash                      # stash local edits
+git pull --rebase origin main  # update local branch
+git stash pop                  # reapply your edits
+# resolve any conflicts, then add & commit
+git add .
+git commit -m "Resolve conflicts after update"
+```
+
+If you have committed local changes, you can rebase those instead of using stash.
+
+---
+
+## 9) Resolve merge conflicts after `git pull`
+
+**Goal:** Fix conflict markers and complete merge/rebase.
+
+When you see conflict markers in files:
+
+```
+<<<<<<< HEAD
+your changes
+=======
+their changes
+>>>>>>> origin/main
+```
+
+Steps:
+
+1. Open each conflicted file in an editor, decide what to keep or combine.
+2. Remove the `<<<<<<<`, `=======`, `>>>>>>>` markers and make the final content correct.
+3. Then:
+
+```bash
+git add path/to/resolved-file
+# If you were merging:
+git commit -m "Resolve merge conflicts"
+# If you were rebasing:
+git rebase --continue
+# Finally push
+git push origin main
+```
+
+Tip: `git status` shows conflicted files. `git diff` helps inspect changes.
+
+---
+
+## 10) Delete a branch from the remote
+
+**Goal:** Remove remote branch after it’s no longer needed.
+
+Steps:
+
+```bash
+# delete remote branch
+git push origin --delete feature/homepage-ui
+
+# optionally delete local branch too
+git branch -d feature/homepage-ui   # fails if not merged
+git branch -D feature/homepage-ui   # force delete
+```
+
+---
+
+## Extra useful commands & tips
+
+* See branches (local & remote):
+
+```bash
+git branch        # local
+git branch -r     # remote
+git branch -a     # all
+```
+
+* Show remote URL:
+
+```bash
+git remote -v
+```
+
+* If a push asks for credentials and fails, clear credentials (Windows Credential Manager) or configure credential helper:
+
+```bash
+# to cache credentials locally for some time
+git config --global credential.helper manager-core
+```
+
+* When rewriting history (force pushes), prefer `--force-with-lease` to avoid accidentally overwriting others’ work.
+
+---
+
+## Quick example workflow (safe typical flow)
+
+```bash
+# clone
+git clone https://github.com/YOUR-USERNAME/your-repo.git
+cd your-repo
+
+# create branch and work
+git checkout -b feature-x
+# edit files...
+git add .
+git commit -m "feat: implement X"
+
+# make sure feature branch is up-to-date
+git fetch origin
+git rebase origin/main
+
+# push feature branch to remote
+git push -u origin feature-x
+
+=>
+git pull --rebase origin <branch-name>
+git push origin feature/feat-1
+git fetch origin
+git checkout branch-name
+git stash                   
+git pull --rebase origin main
+git stash pop               
+git rm --cached path/to/file
+git commit -m "Remove sensitive file"
+git push origin main
+    git filter-branch --force --index-filter \
+    "git rm --cached --ignore-unmatch path/to/file" \
+    --prune-empty --tag-name-filter cat -- --all
+git checkout feature/your-feature
+git fetch origin
+git rebase origin/main
+git push origin branch-name
+git stash
+git pull --rebase origin branch-name
+git stash pop
+git pull origin branch-name
+git add .
+git commit
+git push origin --delete feature/branch-name
+=>
