@@ -1,1 +1,349 @@
+✅ Jenkins – CI/CD Execution Guide
+Includes:
+✔ Continuous Integration using GitHub Webhooks
+✔ Email Notification on Build Success / Failure
 
+(Using Gmail App Password Method – Works 100%)
+
+🎯 PART–1: Continuous Integration (CI) using GitHub Webhook
+
+Goal: Whenever you push code to GitHub → Jenkins should auto-build.
+
+STEP 1 — Start Jenkins & Expose it Publicly using ngrok
+1. Start ngrok on Jenkins port
+
+If Jenkins runs on 8080, in CMD run:
+
+ngrok http 8080
+
+
+You will get a URL like:
+
+https://abc123.ngrok-free.app
+
+2. Copy the “Forwarding URL”
+
+Example (from your file)
+
+https://corkier-darla-handsome.ngrok-free.dev
+
+
+You will use this inside GitHub Webhooks.
+
+STEP 2 — Create a Jenkins Job for Webhook
+1. In Jenkins → Click New Item
+
+Give name:
+
+CI_Webhook_Job
+
+
+Choose → Freestyle Project
+
+2. Configure Source Code Management
+
+Go to Source Code Management → Git
+
+Enter your GitHub repo URL (HTTPS):
+
+https://github.com/yourname/yourrepo.git
+
+
+Branch:
+
+main
+
+3. Add Build Step (Maven Project)
+
+If using Maven:
+
+clean install
+
+4. Enable Webhook trigger
+
+Go to Build Triggers
+✔ Check:
+
+GitHub hook trigger for GITScm polling
+
+
+Click Apply → Save
+
+STEP 3 — Create GitHub Webhook
+1. Open your GitHub repository
+
+Go → Settings → Webhooks → Add Webhook
+
+2. Fill the form:
+Payload URL
+
+Forwarding URL from ngrok + /github-webhook/
+
+Example:
+
+https://corkier-darla-handsome.ngrok-free.dev/github-webhook/
+
+Content type:
+application/json
+
+Events:
+
+Choose:
+
+Just the push event
+
+
+Click Add webhook
+
+Webhook will show:
+
+✔ Green tick – Means working
+❌ Red cross – Means Jenkins unreachable
+
+STEP 4 — Test CI Automation
+
+Go to your repo
+
+Edit ANY file
+
+Click Commit Changes
+
+✔ Jenkins → Automatically starts building
+✔ Dashboard will show:
+
+Started by GitHub push
+
+
+Congrats! 🎉
+You've successfully implemented CI using Webhooks.
+
+🎯 PART–2: Email Notification on Build Success / Failure
+
+This uses Gmail App Password because Gmail blocks direct SMTP.
+
+STEP 1 — Create Gmail App Password
+1. Open Google Account
+
+Go → Security
+
+2. Turn ON:
+
+✔ 2-Step Verification
+
+3. Go to:
+
+Google Account → Security → App Passwords
+
+Select:
+
+App: Other
+Name: Jenkins
+
+
+→ Click Generate
+
+You will get a 16-digit password like:
+
+abcd efgh ijkl mnop
+
+
+COPY IT — this is used in Jenkins SMTP.
+
+STEP 2 — Install Email Extension Plugin
+
+In Jenkins:
+
+Manage Jenkins → Manage Plugins → Available
+
+Install:
+
+Email Extension Plugin
+
+
+Restart Jenkins if required.
+
+STEP 3 — Configure Global Email (SMTP)
+
+Go:
+
+Manage Jenkins → Configure System
+
+Scroll to:
+
+A. Email Notification (Simple Mailer)
+
+Fill:
+
+Field	Value
+SMTP Server	smtp.gmail.com
+Use SMTP auth	✔
+Username	your Gmail ID
+Password	16-digit App Password
+SSL	✔
+SMTP Port	465
+
+Click:
+
+Test configuration by sending a test email
+
+
+If you receive the email → ✔ SMTP working
+
+B. Extended Email Notification
+
+Fill:
+
+Field	Value
+SMTP Server	smtp.gmail.com
+SMTP Port	465
+SSL	✔
+Credentials	Add Gmail + App Password
+Default Content Type	text/html
+
+Save settings.
+
+STEP 4 — Configure Email for your Jenkins Job
+
+Open your CI job:
+
+Project → Configure → Post-Build Actions → Add post-build action
+
+Select:
+
+Editable Email Notification
+
+Fill:
+
+Project Recipient List:
+
+yourmail@gmail.com
+
+
+Triggers to enable:
+✔ Failure
+✔ Success
+✔ Always (optional)
+
+Subject (optional):
+
+Build Status: $BUILD_STATUS
+
+
+Body: (optional)
+
+Job: ${JOB_NAME}
+Status: ${BUILD_STATUS}
+URL: ${BUILD_URL}
+
+
+Save.
+
+STEP 5 — Test Email Notification
+
+Make code changes that cause a build success
+
+Make code changes that cause a build failure (optional):
+
+Example: remove semicolon in Java file
+
+You will receive:
+
+📩 SUCCESS EMAIL
+📩 FAILURE EMAIL
+
+🎉 CI/CD Successfully Implemented!
+
+You now have:
+
+✔ GitHub → Jenkins CI using Webhooks
+✔ Automatic Build Trigger
+✔ Email Alerts (Success + Failure)
+✔ Fully working from your lab manual 
+
+SE_Record_final
+
+ — rewritten in a usable format
+If you want, I can also create:
+
+✅ A pipeline script (Jenkinsfile)
+✅ A full CI/CD diagram
+✅ A video tutorial link (working, not blocked)
+Just tell me!
+
+Sources
+You said:
+2. Turn ON:
+
+✔ 2-Step Verification
+how to do this
+ChatGPT said:
+
+Here is the exact step-by-step method to enable 2-Step Verification in Gmail (Google Account).
+Follow this exactly — takes only 2 minutes.
+
+✅ How to Turn ON 2-Step Verification in Gmail (Google Account)
+STEP 1 — Open Your Google Account
+
+Go to this link:
+
+👉 https://myaccount.google.com/
+
+Make sure you are logged in with the Gmail account you want to use for Jenkins.
+
+STEP 2 — Go to the "Security" Section
+
+On the left side menu:
+
+➡ Click Security
+
+You will see this page with options like:
+✔ Password
+✔ 2-Step Verification
+✔ App Passwords
+✔ Recent Activity
+
+STEP 3 — Find "2-Step Verification"
+
+Scroll down to the section:
+
+"How you sign in to Google"
+
+There you will see:
+
+2-Step Verification  → OFF
+
+
+Click on it.
+
+STEP 4 — Start Setup
+
+Click:
+
+Get Started
+
+Google will ask you to verify your password.
+
+Enter your password and continue.
+
+STEP 5 — Add Your Phone Number
+
+You will now see:
+
+Your phone number
+
+Text message (SMS) or Call options
+
+Choose Text message (SMS)
+Click Next
+
+You will receive an OTP.
+
+Enter the OTP → Click Next
+
+STEP 6 — Turn ON 2-Step Verification
+
+After verification, click:
+
+Turn ON
+
+Your 2-Step Verification is now active. ✔
