@@ -13,7 +13,7 @@ STEP 1 — Start Jenkins & Expose it Publicly using ngrok
 1. Start ngrok on Jenkins port
 
 If Jenkins runs on 8080, in CMD run:
-
+ngrok config add-authtoken 36GfR6iFnGz9FLkKvHRYxlztQsQ_62ZEBwmMEKG7ccmtR6tZR
 ngrok http 8080
 
 
